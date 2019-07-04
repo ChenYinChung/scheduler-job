@@ -1,0 +1,72 @@
+defaultTasks 'clean', 'build'
+
+// use gradlew -Penv=${env} to pass
+def env = hasProperty('env') ? env : "local"
+
+subprojects {
+    apply plugin: 'java-library'
+    apply plugin: 'io.spring.dependency-management'
+    apply plugin: 'org.springframework.boot'
+
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+
+
+    tasks.withType(JavaCompile) {
+        options.encoding = 'UTF-8'
+        options.deprecation = true
+        options.compilerArgs += ['-Xlint:all', '-proc:none']
+    }
+
+    repositories {
+        maven {
+            url "http://nexus.nexiosoft.com:8081/nexus/content/groups/nogle"
+        }
+
+        mavenCentral()
+        gradlePluginPortal()
+        maven { url "https://plugins.gradle.org/m2/" }
+    }
+
+    buildDir = "${rootDir}/build/${name}"
+
+    afterEvaluate {
+        def buildTime = new Date()
+        tasks.withType(Jar) {
+            String ClassPathString = ''
+            configurations.runtime.each { ClassPathString += " lib\\" + it.name }
+            manifest {
+                attributes 'Implementation-Title': project.name,
+                        'Implementation-Version': project.version,
+                        'Created-By': "${System.getProperty('java.version')} (${System.getProperty('java.vendor')})",
+                        'Built-With': "gradle-${project.gradle.gradleVersion}, groovy-${GroovySystem.version}",
+                        'Built-By': System.getProperty('user.name'),
+                        'Built-On': "${InetAddress.localHost.hostName}/${InetAddress.localHost.hostAddress}",
+                        'Build-Time': buildTime.format('yyyy/MM/dd HH:mm:ss'),
+                        'Class-Path': ClassPathString
+            }
+        }
+    }
+
+    sourceSets {
+        main {
+            resources.srcDirs = ["src/main/resources", "profile/common", "profile/${env}"]
+        }
+    }
+}
+
+allprojects {
+    apply plugin: 'idea'
+    idea.module.inheritOutputDirs = true
+}
+
+
+/**
+ * >> groovy默认使用最高版本帮助我们解决版本冲突
+ * >> 修改默认策略,如果有版本冲突,就构建失败
+ */
+configurations.all {
+    resolutionStrategy {
+        failOnVersionConflict()
+    }
+}

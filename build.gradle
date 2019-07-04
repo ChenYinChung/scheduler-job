@@ -1,0 +1,81 @@
+buildscript {
+    ext {
+        SpringBbootStarterVersion = "2.1.5.RELEASE"
+    }
+    repositories {
+        maven {
+            url "http://nexus.nexiosoft.com:8081/nexus/content/groups/nogle"
+        }
+        mavenCentral()
+        gradlePluginPortal()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${SpringBbootStarterVersion}")
+        classpath "gradle.plugin.com.github.spotbugs:spotbugs-gradle-plugin:2.0.0"
+        classpath files("${rootDir}/lib/postgresql-42.2.2.jar")
+    }
+}
+
+/**
+ * 外部 Gradle 設定引用
+ * Apply other .gradle files
+ */
+apply from: file("${rootDir}/gradle/project.gradle")
+//apply from: file("${rootDir}/gradle/check.gradle")
+
+// Only flyway project setting db migration
+configure(subprojects.findAll { it.name.endsWith('-flyway') }) {
+    apply from: file("${rootDir}/gradle/db-migration.gradle")
+}
+
+project(":schedule-flyway") {
+    // remove dependency jars
+    configurations {
+
+    }
+}
+
+
+project(":schedule") {
+
+    configurations {
+        // remove default logger
+        all*.exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+        // remove tomcat , replace with undertow
+        all*.exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
+    }
+
+    dependencies {
+        /**
+         *  spring boot libs
+         */
+        implementation "org.springframework.boot:spring-boot-starter-aop"
+        implementation "org.springframework.boot:spring-boot-starter-web"
+        implementation "org.springframework.boot:spring-boot-starter-undertow"
+        implementation "org.springframework.boot:spring-boot-starter-log4j2"
+        implementation "org.springframework.boot:spring-boot-starter-data-rest"
+        implementation "org.springframework.boot:spring-boot-starter-data-jpa"
+        implementation "org.springframework.boot:spring-boot-starter-jdbc"
+        testImplementation "org.springframework.boot:spring-boot-starter-test"
+        implementation "org.springframework.boot:spring-boot-starter-security"
+        testImplementation "org.springframework.security:spring-security-test"
+        implementation "org.springframework.boot:spring-boot-starter-quartz"
+
+        implementation "org.postgresql:postgresql:42.2.5"
+        implementation "c3p0:c3p0:0.9.1.2"
+
+        implementation group: 'com.alibaba', name: 'fastjson', version: '1.2.58'
+
+
+// https://mvnrepository.com/artifact/commons-collections/commons-collections
+        implementation group: 'commons-collections', name: 'commons-collections', version: '3.2.2'
+
+
+        // https://mvnrepository.com/artifact/com.google.guava/guava
+        implementation group: 'com.google.guava', name: 'guava', version: 'r05'
+
+        // https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
+        implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.0'
+
+    }
+}

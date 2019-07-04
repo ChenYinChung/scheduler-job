@@ -1,0 +1,26 @@
+def env = hasProperty('env') ? env : "local"
+
+/**
+ * 預定copy 及 指定環境目錄
+ */
+sourceSets {
+    main{
+        resources.srcDirs= ['src/main/resources', 'profile/common', 'profile/' + env ]
+    }
+}
+
+/**
+ * 不編譯bootJar
+ * Skip task bootJar
+ */
+bootJar{
+    enabled = false
+}
+
+/**
+ * 利用設定好的環境編譯Jar
+ * Do task jar by environment resources
+ */
+jar {
+    enabled = true
+}

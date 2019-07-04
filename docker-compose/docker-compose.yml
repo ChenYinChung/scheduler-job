@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+
+  postresql:
+    container_name: mps_db
+    image: docker.nexiosoft.com:5000/nogle-postgresql
+    ports:
+      - 5430:5430
+      - 5432:5432
+    environment:
+      - initdb=true
+    privileged: true
