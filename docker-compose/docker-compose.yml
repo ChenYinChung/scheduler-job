@@ -1,13 +1,16 @@
 version: '3'
 
 services:
-
-  postresql:
-    container_name: mps_db
-    image: docker.nexiosoft.com:5000/nogle-postgresql
+  postgresql:
+    container_name : postgresql11
+    image: postgres
     ports:
-      - 5430:5430
-      - 5432:5432
+      - '5432:5432'
     environment:
-      - initdb=true
+#      - POSTGRESQL_USERNAME=testabc
+      - POSTGRESQL_PASSWORD=postgres
+#      - POSTGRESQL_DATABASE=my_database
     privileged: true
+#    volumes:
+#      - ./postgresql_data:/bitnami/postgresql
+#      - ./postgresql_conf:/opt/bitnami/postgresql/conf/

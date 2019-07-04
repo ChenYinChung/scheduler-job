@@ -8,13 +8,14 @@ import org.springframework.stereotype.Component;
 
 import com.nexio.schedule.config.QuartzJob;
 
-@QuartzJob(name = "Hello1Job", cronExp = "6/10 * * * * ?")
+@QuartzJob(name = "InfraJob", cronExp = "2/10 * * * * ?")
 @Component
-public class Hello1Job extends QuartzJobBean {
+public class InfraJob extends QuartzJobBean {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
+    @Override
     public void executeInternal(JobExecutionContext context) {
-            logger.info("Job Key ： {}", context.getJobDetail().getKey());
+        logger.info("InfraJob Key ： {}", context.getJobDetail().getKey());
     }
 }
