@@ -2,11 +2,11 @@ version: '3'
 
 services:
   postgresql:
-    container_name : postgresql
-    image: 'bitnami/postgresql:latest'
+    container_name : postgres_11
+    image: postgres
+    restart: always
     ports:
       - '5432:5432'
     environment:
-      - POSTGRESQL_USERNAME=my_user
-      - POSTGRESQL_PASSWORD=my_password
-      - POSTGRESQL_DATABASE=my_database
+      - POSTGRES_PASSWORD=my_password
+      - POSTGRES_DB=my_database
