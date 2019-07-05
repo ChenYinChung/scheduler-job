@@ -2,15 +2,11 @@ version: '3'
 
 services:
   postgresql:
-    container_name : postgresql11
-    image: postgres
+    container_name : postgresql
+    image: 'bitnami/postgresql:latest'
     ports:
       - '5432:5432'
     environment:
-#      - POSTGRESQL_USERNAME=testabc
-      - POSTGRESQL_PASSWORD=postgres
-#      - POSTGRESQL_DATABASE=my_database
-    privileged: true
-#    volumes:
-#      - ./postgresql_data:/bitnami/postgresql
-#      - ./postgresql_conf:/opt/bitnami/postgresql/conf/
+      - POSTGRESQL_USERNAME=my_user
+      - POSTGRESQL_PASSWORD=my_password
+      - POSTGRESQL_DATABASE=my_database

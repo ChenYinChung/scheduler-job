@@ -1,18 +1,14 @@
 package com.nexio.schedule.quartz;
 
-import java.io.IOException;
-
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 
-import com.alibaba.fastjson.JSON;
 import com.nexio.schedule.config.QuartzJob;
-import com.nexio.schedule.util.PropertiesUtils;
 
-@QuartzJob(name = "LotteryJob", cronExp = "3/10 * * * * ?")
+@QuartzJob(group ="Test" , name = "LotteryJob", cronExp = "4/10 * * * * ?")
 public class LotteryJob extends QuartzJobBean {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());

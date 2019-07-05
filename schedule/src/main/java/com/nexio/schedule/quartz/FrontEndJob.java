@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 import com.nexio.schedule.config.QuartzJob;
 
-@QuartzJob(name = "FrontEndJob", cronExp = "0/10 * * * * ?")
+@QuartzJob(group ="Test" ,name = "FrontEndJob", cronExp = "1/10 * * * * ?")
 @Component
 public class FrontEndJob extends QuartzJobBean {
 

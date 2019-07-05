@@ -8,7 +8,7 @@ import org.springframework.scheduling.quartz.QuartzJobBean;
 
 import com.nexio.schedule.config.QuartzJob;
 
-@QuartzJob(name = "MobileJob", cronExp = "4/10 * * * * ?")
+@QuartzJob(group ="Test" , name = "MobileJob", cronExp = "5/10 * * * * ?")
 public class MobileJob extends QuartzJobBean {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());

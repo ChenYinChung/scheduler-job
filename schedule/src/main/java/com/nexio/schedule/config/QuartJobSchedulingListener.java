@@ -80,11 +80,12 @@ public class QuartJobSchedulingListener implements ApplicationListener<ContextRe
     }
 
     private JobDetailFactoryBean buidlJobDetailFactoryBean(QuartzJobBean job) {
-        QuartzJob quartzJobAnnotation = AnnotationUtils.findAnnotation(job.getClass(), QuartzJob.class);
+        QuartzJob quartzJob = AnnotationUtils.findAnnotation(job.getClass(), QuartzJob.class);
         JobDetailFactoryBean jobDetailFactoryBean = new JobDetailFactoryBean();
-        jobDetailFactoryBean.setName(quartzJobAnnotation.name());
+        jobDetailFactoryBean.setName(quartzJob.name());
         jobDetailFactoryBean.setJobClass(job.getClass());
         jobDetailFactoryBean.setDurability(true);
+        jobDetailFactoryBean.setGroup(quartzJob.group());
         jobDetailFactoryBean.setBeanName(job.getClass().getName());
 
         return jobDetailFactoryBean;
