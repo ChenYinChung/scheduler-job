@@ -1,6 +1,6 @@
 package com.nexio.schedule.config;
 
-import java.io.IOException;
+
 import java.text.ParseException;
 import java.util.Map;
 import java.util.Set;
@@ -10,21 +10,23 @@ import org.quartz.Job;
 import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.scheduling.quartz.CronTriggerFactoryBean;
 import org.springframework.scheduling.quartz.JobDetailFactoryBean;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
-import org.springframework.stereotype.Component;
 
-import com.nexio.schedule.util.PropertiesUtils;
-
-@Component
+@Configuration
 public class QuartJobSchedulingListener implements ApplicationListener<ContextRefreshedEvent> {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    @Autowired
+    SchedulerFactoryBean schedulerFactoryBean;
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
@@ -41,8 +43,6 @@ public class QuartJobSchedulingListener implements ApplicationListener<ContextRe
 
         Map<String, Object> quartzJobBeans = applicationContext.getBeansWithAnnotation(QuartzJob.class);
         Set<String> beanNames = quartzJobBeans.keySet();
-        SchedulerFactoryBean schedulerFactoryBean =  buildSchedulerFactoryBean();
-        schedulerFactoryBean.afterPropertiesSet();
 
         beanNames.forEach(t -> {
             QuartzJobBean job = (QuartzJobBean) quartzJobBeans.get(t);
@@ -69,36 +69,34 @@ public class QuartJobSchedulingListener implements ApplicationListener<ContextRe
         });
     }
 
+    /**
+     * create CronTrigger
+     * @param job
+     * @return
+     */
     private CronTriggerFactoryBean buildCronTriggerFactoryBean(QuartzJobBean job) {
 
-        QuartzJob quartzJobAnnotation = AnnotationUtils.findAnnotation(job.getClass(), QuartzJob.class);
         CronTriggerFactoryBean cronTriggerFactoryBean = new CronTriggerFactoryBean();
+        QuartzJob quartzJobAnnotation = AnnotationUtils.findAnnotation(job.getClass(), QuartzJob.class);
         cronTriggerFactoryBean.setCronExpression(quartzJobAnnotation.cronExp());
         cronTriggerFactoryBean.setName(quartzJobAnnotation.name() + "_TRIGGER");
         cronTriggerFactoryBean.setMisfireInstruction(CronTrigger.MISFIRE_INSTRUCTION_FIRE_ONCE_NOW);
         return cronTriggerFactoryBean;
     }
 
+    /**
+     * create JobDetail
+     * @param job
+     * @return
+     */
     private JobDetailFactoryBean buidlJobDetailFactoryBean(QuartzJobBean job) {
         QuartzJob quartzJob = AnnotationUtils.findAnnotation(job.getClass(), QuartzJob.class);
         JobDetailFactoryBean jobDetailFactoryBean = new JobDetailFactoryBean();
         jobDetailFactoryBean.setName(quartzJob.name());
         jobDetailFactoryBean.setJobClass(job.getClass());
         jobDetailFactoryBean.setDurability(true);
-        jobDetailFactoryBean.setGroup(quartzJob.group());
         jobDetailFactoryBean.setBeanName(job.getClass().getName());
-
+        jobDetailFactoryBean.setGroup(quartzJob.group());
         return jobDetailFactoryBean;
     }
-
-    private SchedulerFactoryBean buildSchedulerFactoryBean() throws IOException {
-        SchedulerFactoryBean schedulerFactoryBean = new SchedulerFactoryBean();
-        schedulerFactoryBean.setAutoStartup(true);
-        schedulerFactoryBean.setQuartzProperties(PropertiesUtils.quartzProperties());
-        schedulerFactoryBean.setOverwriteExistingJobs(true);
-        return schedulerFactoryBean;
-    }
-
-
-
 }

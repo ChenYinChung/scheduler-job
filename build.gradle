@@ -12,7 +12,7 @@ buildscript {
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${SpringBbootStarterVersion}")
         classpath "gradle.plugin.com.github.spotbugs:spotbugs-gradle-plugin:2.0.0"
-        classpath files("${rootDir}/lib/postgresql-42.2.2.jar")
+        classpath files("${rootDir}/libs/postgresql-42.2.2.jar")
     }
 }
 
